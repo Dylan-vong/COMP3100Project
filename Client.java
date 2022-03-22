@@ -28,7 +28,7 @@ class Client {
             System.out.println("IO:"+e.getMessage());
         }
         if(s!=null) try {
-            s.close(); //Ends connection to server if no more inputs
+            s.close(); //Ends connection to server if there are no more inputs
         }
             catch (IOException e){
                 System.out.println("close:"+e.getMessage());
