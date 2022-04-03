@@ -1,8 +1,6 @@
 import java.net.*;
 import java.io.*;
-
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -25,32 +23,43 @@ class Client {
             
             //Begin Handshake Protocol
             out.write(("HELO\n").getBytes()); //Client sends "HELO" to server
-            String helo = in.readLine();
-            System.out.println("Received: " + helo); //Client receives "HELO" success
-            out.write(("AUTH Dylan\n").getBytes()); //Authentication
-            String auth = in.readLine();
-            System.out.println("Received: " + auth); //Client receives Authentication success
+            String helo = in.readLine(); //Client receives "HELO" success
+            System.out.println("Received: " + helo); 
+
+            String username = System.getProperty("user.name"); //Gets system username and saves to a string
+            out.write(("AUTH" + username + "\n").getBytes()); //Authentication
+            String auth = in.readLine(); //Client receives Authentication success
+            System.out.println("Received: " + auth); 
             //End Handshake Protocol
 
             out.write(("REDY\n").getBytes()); //Client signals server for job
-            String redy = in.readLine();
-            System.out.println("Received: " + redy); //Client receives next job
+            String redy = in.readLine(); //Client receives next job
+            System.out.println("Received: " + redy); 
 
             out.write(("GETS All\n").getBytes()); //Client sends server for GET command
-            String get = in.readLine();
-            System.out.println("Received: " + get); //Client receives number of servers available
+            String get = in.readLine(); //Client receives number of servers available
+            System.out.println("Received: " + get); 
 
             out.write(("OK\n").getBytes()); //Client sends server validation
-            String ok = in.readLine();
-            System.out.println("Received: " + ok); //Client receives list of servers
+            String ok = in.readLine(); //Client receives server information
+            System.out.println("Received: " + ok); 
+            
+            out.write(("OK\n").getBytes()); //Client sends server another validation
+            String ok2 = in.readLine(); //Client receives "."
+            System.out.println("Received: " + ok2); 
 
-            // out.write(("OK\n").getBytes()); //Client sends server another validation
-            // String ok2 = in.readLine();
-            // System.out.println("Received: " + ok2); //Client receives "."
+            out.write(("SCHD\n").getBytes()); //Client sends server command to schedule a job
+            String schd = in.readLine(); //Client receives confirmation that job has been scheduled
+            System.out.println("Received: " + schd); 
+
+            out.write(("QUIT\n").getBytes()); //Client sends command to quit/disconnect
+            String quit = in.readLine(); //Client receives server's quit message
+            System.out.println("Received: " + quit + "\n"); 
+            s.close(); //Disconnects from server
 
         }
         catch (UnknownHostException e){ //IP of server is incorrect or cannot be connected to
-            System.out.println("Sock:"+e.getMessage());
+            System.out.println("Host:"+e.getMessage());
         }
         catch (EOFException e){ //End of File
             System.out.println("EOF:"+e.getMessage());
@@ -58,11 +67,11 @@ class Client {
         catch (IOException e){ //An error has occurred
             System.out.println("IO:"+e.getMessage());
         }
-        if(s!=null) try {
-            s.close(); //Ends connection to server if there are no more inputs
+        if(s!= null) try {
+            s.close(); //Ends connection to server
         }
         catch (IOException e){
-            System.out.println("close:"+e.getMessage());
+            System.out.println("EXIT:"+e.getMessage());
         }
     }
 }
@@ -71,7 +80,9 @@ class parse {
     public static void main(String[] args) throws ParserConfigurationException, SAXException, IOException {
         //Initialise array based on data extracted from parser
         List<Server> serverList = ServerParseXML();
-        System.out.println(serverList.toString().substring(1, serverList.toString().length()-1));
+
+        //Print server ArrayList *For testing purposes only*
+        //System.out.println(serverList.toString().substring(1, serverList.toString().length()-1));
     }
 
     private static List<Server> ServerParseXML() throws ParserConfigurationException, SAXException, IOException {
@@ -117,8 +128,10 @@ class Server {
     int memory;
     int disk;
  
-    public String toString() { //Returns extracted server elements into a string
-        return "Server [type:" + type + ", bootupTime:" + bootupTime + ", hourlyRate:" + hourlyRate + ", core:" + core + ", memory:" + memory + ", disk:" + disk + "]\n";
+    public String toString() { 
+        //Returns extracted server elements into a string
+        return "Server [type:" + type + ", bootupTime:" + bootupTime + ", hourlyRate:" + hourlyRate + 
+        ", core:" + core+ ", memory:" + memory + ", disk:" + disk + "]\n";
     }
  
     //Stores extracted server elements into above variables
@@ -170,4 +183,11 @@ class Server {
     public void setServerDisk(int disk) {
         this.disk = disk;
     }
- }
+}
+
+//Sorting algorithm to return largest server by number of cores
+class SortByCore implements Comparator<Server> {
+    public int compare(Server a, Server b){
+        return a.core - b.core;
+    }
+}
