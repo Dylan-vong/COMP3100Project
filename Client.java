@@ -27,35 +27,50 @@ class Client {
             System.out.println("Received: " + helo); 
 
             String username = System.getProperty("user.name"); //Gets system username and saves to a string
-            out.write(("AUTH" + username + "\n").getBytes()); //Authentication
+            out.write(("AUTH " + username + "\n").getBytes()); //Authentication
             String auth = in.readLine(); //Client receives Authentication success
             System.out.println("Received: " + auth); 
             //End Handshake Protocol
 
             out.write(("REDY\n").getBytes()); //Client signals server for job
             String redy = in.readLine(); //Client receives next job
-            System.out.println("Received: " + redy); 
+            System.out.println("Received: " + redy);
+            while(redy != "NONE"){
+                if(redy.contains("JOBN")) {
+                    
+                    String[] jobs = redy.split(" "); //Splits jobs by spaces
+                    out.write(("GETS Capable " + jobs[4] + " " + jobs[5] + " " + jobs[6] + "\n").getBytes()); //Client sends server for GETS Capable command
+                    String gets = in.readLine(); //Client receives all capable of servers available
 
-            out.write(("GETS All\n").getBytes()); //Client sends server for GET command
-            String get = in.readLine(); //Client receives number of servers available
-            System.out.println("Received: " + get); 
+                    String[] serverData = gets.split(" ");
+                    List<String> serverList = new ArrayList<String>();
+                    out.write(("OK\n").getBytes()); //Client sends server validation
+                    String ok = in.readLine(); //Client receives server information
+                    System.out.println("Received: " + ok);
+                    for (int i = 0; i < Integer.valueOf(serverData[1]); i++) {
+                        ok = in.readLine();
+                        serverList.add(ok);
+                        System.out.println(ok);
+                        out.write("OK\n".getBytes());
+                    }
+                    String first = serverList.get(0);
+                    String[] servers = first.split(" "); 
 
-            out.write(("OK\n").getBytes()); //Client sends server validation
-            String ok = in.readLine(); //Client receives server information
-            System.out.println("Received: " + ok); 
+                    out.write(("OK\n").getBytes()); //Client sends server another validation
+                    String ok2 = in.readLine(); //Client receives "."
+                    System.out.println("Received: " + ok2); 
+        
+                    out.write(("SCHD " + jobs[2] + " " + servers[0] + " " + servers[1] + "\n").getBytes()); //Client sends server command to schedule a job
+                    //out.write(("SCHD " + jobs[2] + " small 0\n").getBytes());
+                    String schd = in.readLine(); //Client receives confirmation that job has been scheduled
+                    System.out.println("Received: " + schd);
+                }
+                out.write(("QUIT\n").getBytes()); //Client sends command to quit/disconnect
+                String quit = in.readLine(); //Client receives server's quit message
+                System.out.println("Received: " + quit + "\n"); 
+                s.close(); //Disconnects from server
+            }
             
-            out.write(("OK\n").getBytes()); //Client sends server another validation
-            String ok2 = in.readLine(); //Client receives "."
-            System.out.println("Received: " + ok2); 
-
-            out.write(("SCHD\n").getBytes()); //Client sends server command to schedule a job
-            String schd = in.readLine(); //Client receives confirmation that job has been scheduled
-            System.out.println("Received: " + schd); 
-
-            out.write(("QUIT\n").getBytes()); //Client sends command to quit/disconnect
-            String quit = in.readLine(); //Client receives server's quit message
-            System.out.println("Received: " + quit + "\n"); 
-            s.close(); //Disconnects from server
 
         }
         catch (UnknownHostException e){ //IP of server is incorrect or cannot be connected to
@@ -67,6 +82,10 @@ class Client {
         catch (IOException e){ //An error has occurred
             System.out.println("IO:"+e.getMessage());
         }
+        catch(ArrayIndexOutOfBoundsException e) {
+            System.out.println("IO:"+e.getMessage());
+        }
+
         if(s!= null) try {
             s.close(); //Ends connection to server
         }
