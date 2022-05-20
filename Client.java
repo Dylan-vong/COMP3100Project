@@ -37,7 +37,6 @@ class Client {
                 reply = in.readLine(); //Client receives next job
                 System.out.println("Received: " + reply);
                 while(reply != "NONE"){
-                    if(reply.contains("JOBN")){
                         String[] jobs = reply.split(" "); //Splits jobs by spaces
                         out.write(("GETS Capable " + jobs[4] + " " + jobs[5] + " " + jobs[6] + "\n").getBytes()); //Client sends server for GETS Capable command
                         reply = in.readLine(); //Client receives all capable of servers available
@@ -53,8 +52,9 @@ class Client {
                             System.out.println(reply);
                             out.write("OK\n".getBytes());
                         }
-                        String first = serverList.get(0);
-                        String[] servers = first.split(" "); 
+                        
+                        String first = serverList.get(0); //Gets the first server in the list
+                        String[] servers = first.split(" "); //Splits the server details by spaces
 
                         out.write(("OK\n").getBytes()); //Client sends server another validation
                         reply = in.readLine(); //Client receives "."
@@ -63,7 +63,6 @@ class Client {
                         out.write(("SCHD " + jobs[2] + " " + servers[0] + " " + servers[1] + "\n").getBytes()); //Client sends server command to schedule a job
                         reply = in.readLine(); //Client receives confirmation that job has been scheduled
                         System.out.println("Received: " + reply);
-                    }
                 }
             }
             out.write(("QUIT\n").getBytes()); //Client sends command to quit/disconnect
