@@ -32,17 +32,18 @@ class Client {
             System.out.println("Received: " + reply); 
             //End Handshake Protocol
 
-            while(reply != null){
-                out.write(("REDY\n").getBytes()); //Client signals server for job
-                reply = in.readLine(); //Client receives next job
-                System.out.println("Received: " + reply);
-                while(reply != "NONE"){
-                        String[] jobs = reply.split(" "); //Splits jobs by spaces
-                        out.write(("GETS Capable " + jobs[4] + " " + jobs[5] + " " + jobs[6] + "\n").getBytes()); //Client sends server for GETS Capable command
-                        reply = in.readLine(); //Client receives all capable of servers available
+            out.write(("REDY\n").getBytes()); //Client signals server for job
+            reply = in.readLine(); //Client receives next job
+            System.out.println("Received: " + reply);
+            while(reply != "NONE"){
+                    String[] jobs = reply.split(" "); //Splits jobs by spaces
+                    out.write(("GETS Capable " + jobs[4] + " " + jobs[5] + " " + jobs[6] + "\n").getBytes()); //Client sends server for GETS Capable command
+                    reply = in.readLine(); //Client receives all capable of servers available
 
-                        String[] serverData = reply.split(" ");
-                        List<String> serverList = new ArrayList<String>();
+                    String[] serverData = reply.split(" ");
+                    List<String> serverList = new ArrayList<String>();
+
+                    while(reply != null) {
                         out.write(("OK\n").getBytes()); //Client sends server validation
                         reply = in.readLine(); //Client receives server information
                         System.out.println("Received: " + reply);
@@ -50,20 +51,24 @@ class Client {
                             reply = in.readLine();
                             serverList.add(reply);
                             System.out.println(reply);
-                            out.write("OK\n".getBytes());
-                        }
-                        
-                        String first = serverList.get(0); //Gets the first server in the list
-                        String[] servers = first.split(" "); //Splits the server details by spaces
+                            // out.write("OK\n".getBytes());
 
-                        out.write(("OK\n").getBytes()); //Client sends server another validation
-                        reply = in.readLine(); //Client receives "."
-                        System.out.println("Received: " + reply); 
-            
-                        out.write(("SCHD " + jobs[2] + " " + servers[0] + " " + servers[1] + "\n").getBytes()); //Client sends server command to schedule a job
-                        reply = in.readLine(); //Client receives confirmation that job has been scheduled
-                        System.out.println("Received: " + reply);
-                }
+                            String first = serverList.get(0); //Gets the first server in the list
+                            String[] servers = first.split(" "); //Splits the server details by spaces
+
+                            out.write(("OK\n").getBytes()); //Client sends server another validation
+                            reply = in.readLine(); //Client receives "."
+                            System.out.println("Received: " + reply); 
+                
+                            out.write(("SCHD " + jobs[2] + " " + servers[0] + " " + servers[1] + "\n").getBytes()); //Client sends server command to schedule a job
+                            reply = in.readLine(); //Client receives confirmation that job has been scheduled
+                            System.out.println("Received: " + reply);
+
+                            break;
+                        }
+                        break;
+                    }  
+                    continue; 
             }
             out.write(("QUIT\n").getBytes()); //Client sends command to quit/disconnect
             reply = in.readLine(); //Client receives server's quit message
