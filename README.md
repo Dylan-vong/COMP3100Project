@@ -5,4 +5,4 @@ The project is divided into two stages:
   - System Overview
   - Design
   - Implementation
-- Stage 2 - Design and implement new scheduling algorithms that will be compared to other algorithms such as First-Fit (FF), Best-Fit (BF) and Worst-Fit (WF).
+- Stage 2 - Design and implement new scheduling algorithms that will be compared to other algorithms such as First-Fit (FF), Best-Fit (BF), Worst-Fit (WF), and First-Capable (FC).
