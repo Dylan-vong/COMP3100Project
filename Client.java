@@ -1,16 +1,8 @@
+/* Dylan Vongsouvanh - 45956987 */
+
 import java.net.*;
 import java.io.*;
 import java.util.*;
-
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
-
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
-import org.xml.sax.SAXException;
 
 class Client {
     public static void main (String args[]) {
@@ -32,10 +24,12 @@ class Client {
             System.out.println("Received: " + reply); 
             //End Handshake Protocol
 
-            out.write(("REDY\n").getBytes()); //Client signals server for job
-            reply = in.readLine(); //Client receives next job
-            System.out.println("Received: " + reply);
-            while(reply != "NONE"){
+            while(!reply.equals("NONE")) {
+                out.write(("REDY\n").getBytes()); //Client signals server for job
+                reply = in.readLine(); //Client receives next job
+                System.out.println("Received: " + reply);
+
+                if(reply.contains("JOBN")) {
                     String[] jobs = reply.split(" "); //Splits jobs by spaces
                     out.write(("GETS Capable " + jobs[4] + " " + jobs[5] + " " + jobs[6] + "\n").getBytes()); //Client sends server for GETS Capable command
                     reply = in.readLine(); //Client receives all capable of servers available
@@ -43,38 +37,32 @@ class Client {
                     String[] serverData = reply.split(" ");
                     List<String> serverList = new ArrayList<String>();
 
-                    while(reply != null) {
-                        out.write(("OK\n").getBytes()); //Client sends server validation
-                        reply = in.readLine(); //Client receives server information
-                        System.out.println("Received: " + reply);
-                        for (int i = 0; i < Integer.valueOf(serverData[1]); i++) {
-                            reply = in.readLine();
-                            serverList.add(reply);
-                            System.out.println(reply);
-                            // out.write("OK\n".getBytes());
+                    out.write(("OK\n").getBytes()); //Client sends server validation
 
-                            String first = serverList.get(0); //Gets the first server in the list
-                            String[] servers = first.split(" "); //Splits the server details by spaces
+                    for(int i = 0; i < Integer.valueOf(serverData[1]); i++) {
+                        reply = in.readLine();
+                        serverList.add(reply);
+                        System.out.println(reply);
+                    }
 
-                            out.write(("OK\n").getBytes()); //Client sends server another validation
-                            reply = in.readLine(); //Client receives "."
-                            System.out.println("Received: " + reply); 
-                
-                            out.write(("SCHD " + jobs[2] + " " + servers[0] + " " + servers[1] + "\n").getBytes()); //Client sends server command to schedule a job
-                            reply = in.readLine(); //Client receives confirmation that job has been scheduled
-                            System.out.println("Received: " + reply);
+                    String first = serverList.get(0); //Gets the first server in the list
+                    String[] servers = first.split(" "); //Splits the server details by spaces
 
-                            break;
-                        }
-                        break;
-                    }  
-                    continue; 
-            }
+                    out.write(("OK\n").getBytes()); //Client sends server another validation
+                    reply = in.readLine(); //Client receives "."
+                    System.out.println("Received: " + reply); 
+                    
+                    out.write(("SCHD " + jobs[2] + " " + servers[0] + " " + servers[1] + "\n").getBytes()); //Client sends server command to schedule a job
+                    reply = in.readLine(); //Client receives confirmation that job has been scheduled
+                    System.out.println("Received: " + reply);
+                } 
+            }            
             out.write(("QUIT\n").getBytes()); //Client sends command to quit/disconnect
             reply = in.readLine(); //Client receives server's quit message
             System.out.println("Received: " + reply + "\n"); 
-            s.close(); //Disconnects from server
+            s.close(); //Disconnects from server    
         }
+
         catch (UnknownHostException e){ //IP of server is incorrect or cannot be connected to
             System.out.println("Host:"+e.getMessage());
         }
@@ -88,7 +76,7 @@ class Client {
             System.out.println("IO:"+e.getMessage());
         }
 
-        if(s!= null) try {
+        if(s != null) try {
             s.close(); //Ends connection to server
         }
         catch (IOException e){
