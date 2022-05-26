@@ -45,8 +45,8 @@ class Client {
                         System.out.println(reply);
                     }
 
-                    String first = serverList.get(0); //Gets the first server in the list
-                    String[] servers = first.split(" "); //Splits the server details by spaces
+                    String last = serverList.get(serverList.size()-1); //Gets the last server in the list
+                    String[] servers = last.split(" "); //Splits the server details by spaces
 
                     out.write(("OK\n").getBytes()); //Client sends server another validation
                     reply = in.readLine(); //Client receives "."
