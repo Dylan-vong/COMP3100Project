@@ -2,7 +2,8 @@
 
 import java.net.*;
 import java.io.*;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
 
 class Client {
     public static void main (String args[]) {
@@ -24,24 +25,24 @@ class Client {
             System.out.println("Received: " + reply); 
             //End Handshake Protocol
 
-            while(!reply.equals("NONE")) {
+            while(!reply.equals("NONE")) { //Checks if there are any jobs available
                 out.write(("REDY\n").getBytes()); //Client signals server for job
                 reply = in.readLine(); //Client receives next job
                 System.out.println("Received: " + reply);
 
-                if(reply.contains("JOBN")) {
+                if(reply.contains("JOBN")) { //Checks if the server's response contains a job
                     String[] jobs = reply.split(" "); //Splits jobs by spaces
                     out.write(("GETS Capable " + jobs[4] + " " + jobs[5] + " " + jobs[6] + "\n").getBytes()); //Client sends server for GETS Capable command
                     reply = in.readLine(); //Client receives all capable of servers available
 
-                    String[] serverData = reply.split(" ");
-                    List<String> serverList = new ArrayList<String>();
+                    String[] serverData = reply.split(" "); //Splits the server information
+                    List<String> serverList = new ArrayList<String>(); //Create a new arraylist for servers
 
-                    out.write(("OK\n").getBytes()); //Client sends server validation
+                    out.write(("OK\n").getBytes()); //Client sends server validation/receive server list
 
-                    for(int i = 0; i < Integer.valueOf(serverData[1]); i++) {
-                        reply = in.readLine();
-                        serverList.add(reply);
+                    for(int i = 0; i < Integer.valueOf(serverData[1]); i++) { //Iterates over all servers to parse them
+                        reply = in.readLine(); //Client reads server list
+                        serverList.add(reply); //Add the current server into the arraylist
                         System.out.println(reply);
                     }
 
@@ -72,11 +73,11 @@ class Client {
         catch (IOException e){ //An error has occurred
             System.out.println("IO:"+e.getMessage());
         }
-        catch(ArrayIndexOutOfBoundsException e) {
+        catch(ArrayIndexOutOfBoundsException e) { //Array items exceeds the storage allocated
             System.out.println("IO:"+e.getMessage());
         }
 
-        if(s != null) try {
+        if(s != null) try { //The socket stops sending messages to the client
             s.close(); //Ends connection to server
         }
         catch (IOException e){
