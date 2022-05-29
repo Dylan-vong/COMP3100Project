@@ -32,10 +32,10 @@ class Client {
 
                 if(reply.contains("JOBN")) { //Checks if the server's response contains a job
                     String[] jobs = reply.split(" "); //Splits jobs by spaces
-                    out.write(("GETS Capable " + jobs[4] + " " + jobs[5] + " " + jobs[6] + "\n").getBytes()); //Client sends server for GETS Capable command
-                    reply = in.readLine(); //Client receives all capable of servers available
+                    out.write(("GETS Capable " + jobs[4] + " " + jobs[5] + " " + jobs[6] + "\n").getBytes()); //Client sends server GETS Capable command using core, memory, and disk to receive capable servers
+                    reply = in.readLine(); //Client receives all capable servers that are available
 
-                    String[] serverData = reply.split(" "); //Splits the server information
+                    String[] serverData = reply.split(" "); //Splits the server information by spaces
                     List<String> serverList = new ArrayList<String>(); //Create a new arraylist for servers
 
                     out.write(("OK\n").getBytes()); //Client sends server validation/receive server list
@@ -43,7 +43,7 @@ class Client {
                     for(int i = 0; i < Integer.valueOf(serverData[1]); i++) { //Iterates over all servers to parse them
                         reply = in.readLine(); //Client reads server list
                         serverList.add(reply); //Add the current server into the arraylist
-                        System.out.println(reply);
+                        System.out.println("Received: " + reply);
                     }
 
                     String last = serverList.get(serverList.size()-1); //Gets the last server in the list
@@ -53,7 +53,7 @@ class Client {
                     reply = in.readLine(); //Client receives "."
                     System.out.println("Received: " + reply); 
                     
-                    out.write(("SCHD " + jobs[2] + " " + servers[0] + " " + servers[1] + "\n").getBytes()); //Client sends server command to schedule a job
+                    out.write(("SCHD " + jobs[2] + " " + servers[0] + " " + servers[1] + "\n").getBytes()); //Client sends server command to schedule a job using job id, server name, and server id
                     reply = in.readLine(); //Client receives confirmation that job has been scheduled
                     System.out.println("Received: " + reply);
                 } 
@@ -65,23 +65,23 @@ class Client {
         }
 
         catch (UnknownHostException e){ //IP of server is incorrect or cannot be connected to
-            System.out.println("Host:"+e.getMessage());
+            System.out.println("Host:" + e.getMessage());
         }
         catch (EOFException e){ //End of File
-            System.out.println("EOF:"+e.getMessage());
+            System.out.println("EOF:" + e.getMessage());
         }
         catch (IOException e){ //An error has occurred
-            System.out.println("IO:"+e.getMessage());
+            System.out.println("IO:" + e.getMessage());
         }
         catch(ArrayIndexOutOfBoundsException e) { //Array items exceeds the storage allocated
-            System.out.println("IO:"+e.getMessage());
+            System.out.println("IO:" + e.getMessage());
         }
 
         if(s != null) try { //The socket stops sending messages to the client
             s.close(); //Ends connection to server
         }
-        catch (IOException e){
-            System.out.println("EXIT:"+e.getMessage());
+        catch (IOException e){ //An error has occurred
+            System.out.println("EXIT:" + e.getMessage());
         }
     }
 }
