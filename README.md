@@ -5,4 +5,8 @@ The project is divided into two stages:
   - System Overview
   - Design
   - Implementation
-- Stage 2 - Design and implement new scheduling algorithms that will be compared to other algorithms such as First-Fit (FF), Best-Fit (BF), Worst-Fit (WF), and First-Capable (FC).
+- Stage 2 - Design and implement new scheduling algorithms that will be compared to other algorithms such as First-Fit (FF), Best-Fit (BF), Worst-Fit (WF), and First-Capable (FC). This new scheduling algorithm aims to optimise the average turnaround time whilst not sacrificing the performance of any other metrics (i.e., average waiting time, total cost, etc). Another five page report will be included in this stage documenting:
+  -  Problem Definition
+  -  Algorithm Description
+  -  Implementation
+  -  Evaluation 
